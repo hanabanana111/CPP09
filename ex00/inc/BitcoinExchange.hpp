@@ -7,25 +7,23 @@
 
 class BitcoinExchange{
     private:
-        std::map<std::string, double> _bitcoinData;
         std::map<std::string, double> _inputData;
+
+        void processLine(const std::string &line);
+
+        void parseLine(const std::string &dataPath);
+        bool IsValidData(std::string &date, double &value);
+        bool IsValidValue(std::string &date, double &value);
+
+        void loadDatabase(const std::string &csvPath);
+        std::string findNearestDate(const std::string &date);
 
     public:
         BitcoinExchange();
         BitcoinExchange(const BitcoinExchange& other);
         ~BitcoinExchange();
 
-        bool IsValidOpen(std::string &dataPath);
-        void set_value(std::string &dataPath);
-
-        // "date | value" format
-        bool IsInputValidData();
-        // Year-Month-Day
-        bool IsInputValidDate();
-        // between _bitcoinData.begin() to _bitcoinData.rbegin()
-        bool IsInputDateValue();
-        // 0 ~ 1000
-        bool IsInputValidValue();
+        void run(const std::string &inputPath);
 };
 
-#endif
+#endif*
