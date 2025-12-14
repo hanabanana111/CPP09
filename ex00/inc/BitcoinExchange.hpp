@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <sstream>
 
 #define CSV_PATH "../cpp_09/data.csv"
 
@@ -17,9 +18,15 @@ class BitcoinExchange{
 
         void processLine(const std::string &line);
 
-        void parseLine(const std::string &dataPath);
+        void parseLine(const std::string &line);
+
         bool IsValidData(const std::string &date);
-        bool IsValidValue(const std::string &value, std::string error);
+        bool isLeap(int y);
+
+
+        bool IsNumValue(const std::string &value);
+        bool IsMinusValue(const double &value);
+        bool IsTooBigValue(const std::string &value);
 
         void loadDatabase(const std::string &csvPath);
         std::string findNearestDate(const std::string &date);

@@ -32,14 +32,27 @@ void BitcoinExchange::parseLine(const std::string &line){
         return ;
     }
 
-    if (IsValidValue()){
+    if (IsValidValue(tmpValue) == false){
 
     }
 };
 
+bool BitcoinExchange::IsValidData(const std::string &date){
+    std::string dateTmp = trim(date);
+    if (dateTmp.size() != 10){
+        return false;
+    }
+    std::stringstream ss(date);
+    int year;
+    int month;
+    int day;
+    
+
+};
 //まずは、数値かチェックする、マイナス化チェックする、大きすぎないかチェックする
-bool BitcoinExchange::IsValidData(const std::string &date){};
-bool BitcoinExchange::IsValidValue(const std::string &value){};
+bool BitcoinExchange::IsNumValue(const std::string &value){};
+bool BitcoinExchange::IsMinusValue(const std::string &value, std::string error){};
+bool BitcoinExchange::IsTooBigValue(const std::string &value, std::string error){};
 void BitcoinExchange::loadDatabase(const std::string &csvPath){};
 std::string BitcoinExchange::findNearestDate(const std::string &date){};
 
