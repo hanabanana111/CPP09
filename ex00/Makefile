@@ -6,7 +6,7 @@ SRCDIR := ./src
 INCDIR := ./inc
 
 SRC := $(SRCDIR)/main.cpp \
-	   $(SRCDIR)/Span.cpp 
+	   $(SRCDIR)/BitcoinExchange.cpp 
 
 INCLUDES := -I$(INCDIR)
 

@@ -8,7 +8,8 @@
 #include <stdexcept>
 #include <sstream>
 
-#define CSV_PATH "../cpp_09/data.csv"
+#define CSV_PATH "./cpp_09/data.csv"
+#define THIS_YEAR 2025
 
 class BitcoinExchange{
     private:
@@ -18,20 +19,21 @@ class BitcoinExchange{
 
         void processLine(const std::string &line);
 
-        void parseLine(const std::string &line);
+        bool parseLine(const std::string &line, const std::string &sep);
 
         bool IsValidData(const std::string &date);
         bool isLeap(int y);
 
 
         bool IsNumValue(const std::string &value);
-        bool IsMinusValue(const double &value);
-        bool IsTooBigValue(const std::string &value);
+        bool IsMinusValue();
+        bool IsTooBigValue();
 
-        void loadDatabase(const std::string &csvPath);
-        std::string findNearestDate(const std::string &date);
+        bool loadDatabase(const std::string &csvPath);
+        void findNearestDate();
 
         static std::string trim(const std::string line);
+        static bool isLeapYear(int year);
 
     public:
         BitcoinExchange();

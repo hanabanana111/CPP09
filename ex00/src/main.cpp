@@ -1,8 +1,10 @@
 #include  "../inc/BitcoinExchange.hpp"
 
 int main(int argc, char **args){
-    if (argc != 2)
+    if (argc != 2){
+        std::cerr << "Error: Invalid arg." << std::endl;
         return 0;
+    }
     try{    
         BitcoinExchange BE = BitcoinExchange();
         BE.run(args[1]);
