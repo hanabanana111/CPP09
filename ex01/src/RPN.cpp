@@ -1,10 +1,10 @@
 #include "../inc/RPN.hpp"
 
 int RPN::evaluate(const std::string str){
-    std::stack<int> nums;
+    std::stack<long> nums;
     std::string token;
     std::string operators = "+-/*";
-    int result, tmp, a, b;
+    long result, tmp, a, b;
 
     std::stringstream ss(str);
     while(ss >> token){
@@ -27,10 +27,17 @@ int RPN::evaluate(const std::string str){
             } else if (token[0] == '-'){
                 result = (a - b);
             } else if (token[0] == '/'){
+                if (b == 0)
+                    throw std::runtime_error("Error");
                 result = (a / b);
             } else if (token[0] == '*'){
                 result = (a * b);
             }
+        if (result > std::numeric_limits<int>::max()
+            || result < std::numeric_limits<int>::min())
+        {
+            throw std::runtime_error("Error");
+        }
             nums.push(result);
         }else{
             throw std::runtime_error("Error");
