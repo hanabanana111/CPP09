@@ -8,7 +8,7 @@ PmergeMe::~PmergeMe(){};
 
 void PmergeMe::run(){
     std::cout << "Before: ";
-    for (int i = 0; i < _vec.size(); i++) {
+    for (size_t i = 0; i < this->_vec.size(); i++) {
         std::cout << _vec[i] << " ";
     }
     std::cout << std::endl;
@@ -18,8 +18,8 @@ void PmergeMe::run(){
     clock_t end = clock();
 
     std::cout << "After: ";
-    for (int num : _vec) {
-        std::cout << num << " ";
+    for (size_t i = 0; i < this->_vec.size(); i++) {
+        std::cout << _vec[i] << " ";
     }
     std::cout << std::endl;
     
@@ -27,8 +27,9 @@ void PmergeMe::run(){
     std::cout << "Time to process a range of " << _vec.size() << "elements with std::vector : " << duration*1000000 << "us" << std::endl;
 
     start = clock();
-    fordJohnsonDeque();
+    fordJohnsonDeque(this->_deq);
     end = clock();
+
      duration = double(end - start) / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << _vec.size() << "elements with std::deque : " << duration*1000000 << "us" << std::endl;
 };
@@ -59,57 +60,260 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &vec){
         return;
     }
     // odd
-    if (n%2 == 1){
-        int extra = vec.back();
+    bool hasExtra = false;
+    int extra;
+    if (n%2 != 0){
+        extra = vec.back();
         vec.pop_back();
-        fordJohnsonVector(vec);
-        insertVector(vec, extra);
-        return;
+        hasExtra = true;
     }
 
     std::vector<int> winners;
-    std::vector<std::pair<int, int>> losers;
-    int specialLoser;
+    std::vector<std::pair<int, int> > pairs;
 
-    // smallest num
-    if (vec[0] < vec[1]){
-        winners.push_back(vec[1]);
-        specialLoser = vec[0];
-    }else{
-        winners.push_back(vec[0]);
-        specialLoser = vec[1];
-    }
-
-    size_t i = 0;
     // win or lose
-    while (i + 1 < vec.size()) {
+    for (size_t i = 0; i < vec.size(); i += 2) {
         if (vec[i] < vec[i + 1]) {
             winners.push_back(vec[i+1]);
-            losers.push_back(std::make_pair(vec[i+1], vec[i]));
+            pairs.push_back(std::make_pair(vec[i+1], vec[i]));
         } else {
             winners.push_back(vec[i]);
-            losers.push_back(std::make_pair(vec[i], vec[i+1]));
+            pairs.push_back(std::make_pair(vec[i], vec[i+1]));
         }
-        i += 2;
     }
+
     fordJohnsonVector(winners);
+
     // put the smallest num
-    winners.insert(winners.begin(), specialLoser);
+    int firstWinner = winners[0];
+    for (size_t i = 0; i < pairs.size(); i++) {
+        if (pairs[i].first == firstWinner) {
+            winners.insert(winners.begin(), pairs[i].second);
+            pairs.erase(pairs.begin() + i);
+            break;
+        }
+    }
 
-    //insert losers
+    //insert pairs
+    std::vector<int> insertionOrder = buildInsertionOrderVector(pairs.size());
+    for (size_t i = 0; i < insertionOrder.size(); i++){
+        int idx = insertionOrder[i];
+        if (idx >= (int)pairs.size()){
+            continue;
+        }
+        int tgWinner = pairs[idx].first;
+        int val = pairs[idx].second;
 
+        std::vector<int>::iterator it = std::find(winners.begin(), winners.end(), tgWinner);
+        int upTo = std::distance(winners.begin(), it);
+
+        insertAtBinarySearchVector(winners, val, upTo);
+    }
+
+    if (hasExtra) {
+        insertAtBinarySearchVector(winners, extra, winners.size());
+    }
     vec = winners;
 }
 
-void PmergeMe::insertVector(std::vector<int> &vec, int extra) {
+int PmergeMe::binarySearchInsertPositionVector(const std::vector<int>& winners, int val, int upTo) {
+    int left = 0;
+    int right = upTo;
 
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+
+        if (winners[mid] < val) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    return left;
 }
 
-void PmergeMe::fordJohnsonDeque(){
+void PmergeMe::insertAtBinarySearchVector(std::vector<int>& winners, int val, int upTo) {
+    int position = binarySearchInsertPositionVector(winners, val, upTo);
+    winners.insert(winners.begin() + position, val);
+}
 
-    std::cout << "After: ";
-    for (int num : _vec) {
-        std::cout << num << " ";
+std::vector<int> PmergeMe::buildJacobsthalVector(int max)
+{
+    std::vector<int> jacob;
+
+    jacob.push_back(0);
+    jacob.push_back(1);
+
+    while (true) {
+        int next = jacob[jacob.size() - 1]
+                 + 2 * jacob[jacob.size() - 2];
+        if (next > max)
+            break;
+        jacob.push_back(next);
     }
-    std::cout << std::endl;
-};
+    return jacob;
+}
+
+std::vector<int> PmergeMe::buildInsertionOrderVector(int pairsSize) {
+    std::vector<int> insertionOrder;
+
+    std::vector<int> jacob = buildJacobsthalVector(pairsSize);
+
+    int prev = 1;
+    insertionOrder.push_back(0); 
+
+    for (size_t k = 2; k < jacob.size(); ++k) {
+        int j = jacob[k];
+        if (j >= pairsSize) {
+            break;
+        }
+
+        insertionOrder.push_back(j);
+        for (int i = j - 1; i > prev; --i) {
+            insertionOrder.push_back(i);
+        }
+        prev = j;
+    }
+
+    for (int i = pairsSize - 1; i > prev; --i) {
+        insertionOrder.push_back(i);
+    }
+
+    return insertionOrder;
+}
+
+// void PmergeMe::fordJohnsonDeque(){
+
+
+// };
+
+void PmergeMe::fordJohnsonDeque(std::deque<int> &vec){
+    int n = vec.size();
+
+    if (n <= 1){
+        return;
+    }
+    // odd
+    bool hasExtra = false;
+    int extra;
+    if (n%2 != 0){
+        extra = vec.back();
+        vec.pop_back();
+        hasExtra = true;
+    }
+
+    std::deque<int> winners;
+    std::deque<std::pair<int, int> > pairs;
+
+    // win or lose
+    for (size_t i = 0; i < vec.size(); i += 2) {
+        if (vec[i] < vec[i + 1]) {
+            winners.push_back(vec[i+1]);
+            pairs.push_back(std::make_pair(vec[i+1], vec[i]));
+        } else {
+            winners.push_back(vec[i]);
+            pairs.push_back(std::make_pair(vec[i], vec[i+1]));
+        }
+    }
+
+    fordJohnsonDeque(winners);
+
+    // put the smallest num
+    int firstWinner = winners[0];
+    for (size_t i = 0; i < pairs.size(); i++) {
+        if (pairs[i].first == firstWinner) {
+            winners.insert(winners.begin(), pairs[i].second);
+            pairs.erase(pairs.begin() + i);
+            break;
+        }
+    }
+
+    //insert pairs
+    std::deque<int> insertionOrder = buildInsertionOrderDeque(pairs.size());
+    for (size_t i = 0; i < insertionOrder.size(); i++){
+        int idx = insertionOrder[i];
+        if (idx >= (int)pairs.size()){
+            continue;
+        }
+        int tgWinner = pairs[idx].first;
+        int val = pairs[idx].second;
+
+        std::deque<int>::iterator it = std::find(winners.begin(), winners.end(), tgWinner);
+        int upTo = std::distance(winners.begin(), it);
+
+        insertAtBinarySearchDeque(winners, val, upTo);
+    }
+
+    if (hasExtra) {
+        insertAtBinarySearchDeque(winners, extra, winners.size());
+    }
+    vec = winners;
+}
+
+int PmergeMe::binarySearchInsertPositionDeque(const std::deque<int>& winners, int val, int upTo) {
+    int left = 0;
+    int right = upTo;
+
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+
+        if (winners[mid] < val) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    return left;
+}
+
+void PmergeMe::insertAtBinarySearchDeque(std::deque<int>& winners, int val, int upTo) {
+    int position = binarySearchInsertPositionDeque(winners, val, upTo);
+    winners.insert(winners.begin() + position, val);
+}
+
+std::deque<int> PmergeMe::buildJacobsthalDeque(int max)
+{
+    std::deque<int> jacob;
+
+    jacob.push_back(0);
+    jacob.push_back(1);
+
+    while (true) {
+        int next = jacob[jacob.size() - 1]
+                 + 2 * jacob[jacob.size() - 2];
+        if (next > max)
+            break;
+        jacob.push_back(next);
+    }
+    return jacob;
+}
+
+std::deque<int> PmergeMe::buildInsertionOrderDeque(int pairsSize) {
+    std::deque<int> insertionOrder;
+
+    std::deque<int> jacob = buildJacobsthalDeque(pairsSize);
+
+    int prev = 1;
+    insertionOrder.push_back(0); 
+
+    for (size_t k = 2; k < jacob.size(); ++k) {
+        int j = jacob[k];
+        if (j >= pairsSize) {
+            break;
+        }
+
+        insertionOrder.push_back(j);
+        for (int i = j - 1; i > prev; --i) {
+            insertionOrder.push_back(i);
+        }
+        prev = j;
+    }
+
+    for (int i = pairsSize - 1; i > prev; --i) {
+        insertionOrder.push_back(i);
+    }
+
+    return insertionOrder;
+}
