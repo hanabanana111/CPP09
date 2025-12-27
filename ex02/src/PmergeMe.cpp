@@ -53,6 +53,8 @@ void PmergeMe::parseInput(char **av){
     }
 };
 
+
+// vector
 void PmergeMe::fordJohnsonVector(std::vector<int> &vec){
     int n = vec.size();
 
@@ -138,6 +140,33 @@ void PmergeMe::insertAtBinarySearchVector(std::vector<int>& winners, int val, in
     winners.insert(winners.begin() + position, val);
 }
 
+std::vector<int> PmergeMe::buildInsertionOrderVector(int pairsSize) {
+    std::vector<int> insertionOrder;
+    std::vector<int> jacob = buildJacobsthalVector(pairsSize);
+
+    int prev = 1;
+    insertionOrder.push_back(0); 
+
+    for (size_t k = 2; k < jacob.size(); ++k) {
+        int j = jacob[k];
+        if (j >= pairsSize) {
+            break;
+        }
+        insertionOrder.push_back(j);
+        for (int i = j - 1; i > prev; --i) {
+            insertionOrder.push_back(i);
+        }
+        prev = j;
+    }
+
+    // leftovers
+    for (int i = pairsSize - 1; i > prev; --i) {
+        insertionOrder.push_back(i);
+    }
+
+    return insertionOrder;
+}
+
 std::vector<int> PmergeMe::buildJacobsthalVector(int max)
 {
     std::vector<int> jacob;
@@ -155,39 +184,7 @@ std::vector<int> PmergeMe::buildJacobsthalVector(int max)
     return jacob;
 }
 
-std::vector<int> PmergeMe::buildInsertionOrderVector(int pairsSize) {
-    std::vector<int> insertionOrder;
-
-    std::vector<int> jacob = buildJacobsthalVector(pairsSize);
-
-    int prev = 1;
-    insertionOrder.push_back(0); 
-
-    for (size_t k = 2; k < jacob.size(); ++k) {
-        int j = jacob[k];
-        if (j >= pairsSize) {
-            break;
-        }
-
-        insertionOrder.push_back(j);
-        for (int i = j - 1; i > prev; --i) {
-            insertionOrder.push_back(i);
-        }
-        prev = j;
-    }
-
-    for (int i = pairsSize - 1; i > prev; --i) {
-        insertionOrder.push_back(i);
-    }
-
-    return insertionOrder;
-}
-
-// void PmergeMe::fordJohnsonDeque(){
-
-
-// };
-
+// deque
 void PmergeMe::fordJohnsonDeque(std::deque<int> &vec){
     int n = vec.size();
 
