@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <deque>
+#include <cstdlib>
+#include <climits>
+#include <stdexcept>
 
 class PmergeMe{
     private:
@@ -12,10 +15,9 @@ class PmergeMe{
 
         void parseInput(char **av);
 
-        void sortVector();
-        void sortDeque();
+        void fordJohnsonVector(std::vector<int> &vec);
+        void insertVector(std::vector<int> &vec, int extra);
 
-        void fordJohnsonVector();
         void fordJohnsonDeque();
 
     public:

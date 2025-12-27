@@ -5,9 +5,9 @@ int main(int ac, char **av){
         std::cerr << "Error: No arg" << std::endl;
         return 1;
     }
-
     try{
-        PmergeMe(av);
+        PmergeMe pergeMe(av);
+        pergeMe.run();
     } catch(std::exception &e){
         std::cerr << "Error: " << e.what() << std::endl;
     }
