@@ -13,6 +13,7 @@ class PmergeMe{
     private:
         std::vector<int> _vec;
         std::deque<int> _deq;
+        long long _cnt;
 
         void parseInput(char **av);
 

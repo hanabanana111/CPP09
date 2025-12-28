@@ -1,6 +1,6 @@
 #include "../inc/PmergeMe.hpp"
 
-PmergeMe::PmergeMe(char **av){
+PmergeMe::PmergeMe(char **av):_cnt(0){
     parseInput(av);
 };
 
@@ -25,6 +25,8 @@ void PmergeMe::run(){
     
     double duration = double(end - start) / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << _vec.size() << " elements with std::vector : " << duration*1000000 << "us" << std::endl;
+    std::cout << "Count : " << this->_cnt << std::endl;
+
 
     start = clock();
     fordJohnsonDeque(this->_deq);
@@ -75,6 +77,7 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &vec){
 
     // win or lose
     for (size_t i = 0; i < vec.size(); i += 2) {
+        this->_cnt++;
         if (vec[i] < vec[i + 1]) {
             winners.push_back(vec[i+1]);
             pairs.push_back(std::make_pair(vec[i+1], vec[i]));
@@ -123,6 +126,7 @@ int PmergeMe::binarySearchInsertPositionVector(const std::vector<int>& winners, 
     int right = upTo;
 
     while (left < right) {
+        this->_cnt++;
         int mid = left + (right - left) / 2;
 
         if (winners[mid] < val) {
