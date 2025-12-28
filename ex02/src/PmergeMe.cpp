@@ -24,14 +24,14 @@ void PmergeMe::run(){
     std::cout << std::endl;
     
     double duration = double(end - start) / CLOCKS_PER_SEC;
-    std::cout << "Time to process a range of " << _vec.size() << "elements with std::vector : " << duration*1000000 << "us" << std::endl;
+    std::cout << "Time to process a range of " << _vec.size() << " elements with std::vector : " << duration*1000000 << "us" << std::endl;
 
     start = clock();
     fordJohnsonDeque(this->_deq);
     end = clock();
 
      duration = double(end - start) / CLOCKS_PER_SEC;
-    std::cout << "Time to process a range of " << _vec.size() << "elements with std::deque : " << duration*1000000 << "us" << std::endl;
+    std::cout << "Time to process a range of " << _vec.size() << " elements with std::deque : " << duration*1000000 << "us" << std::endl;
 };
 
 void PmergeMe::parseInput(char **av){
