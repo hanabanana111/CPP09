@@ -5,6 +5,10 @@ int main(int ac, char **av){
         std::cerr << "Error: No arg" << std::endl;
         return 1;
     }
+    if (ac > 4000){
+        std::cerr << "Error: Too much args" << std::endl;
+        return 1;
+    }
     try{
         PmergeMe pergeMe(av);
         pergeMe.run();
